@@ -6,6 +6,7 @@ from matplotlib.collections import LineCollection
 from matplotlib import cm
 import numpy as np
 import pandas as pd
+from fastf1 import utils
 
 #I want to analyze lap times in quali and quali positions
 #get fastest times in fp1,fp2,fp3 and Q as well as placement times and compare them
@@ -13,25 +14,48 @@ import pandas as pd
 
 
 
-final_data = {}
+final_data = {} # Final data will be stored in { Race: [{Driver : {'session" : LapTime}]}}
 # "Brazil GP", "QATAR GRAND PRIX", "Saudi Arabia GP", "ABU DHABI GRAND PRIX"
 selected_races = ["Mexico GP"]
 
-selected_sessions = ['FP1', 'FP2', 'FP3', 'Q']
+selected_sessions = ['FP1', 'FP2']#'FP3', 'Q'
 temp_var = {}
 
 drivers = ['LEC','SAI']
 
+k = 0
 
 for i in selected_races:
-    for k in drivers:
-        final_data[i] = {k:[]}
+    final_data[i] = {}
+    while k < len(drivers):
+        temp_driver = {drivers[k]:{}}
+
         for l in selected_sessions:
             temp = ff1.get_session(2021, i, l).load_laps()
-            temp_time = temp.pick_driver(k).pick_fastest()
-            final_temp = {l: temp_time['LapTime']}
-            last_lap_times = final_data[i].get(k)
-            last_lap_times.append(final_temp)
-            final_data[i][k] = last_lap_times
+            temp_time = temp.pick_driver(drivers[k]).pick_fastest()
+            test = str(temp_time['LapTime'])
+            final_temp = test[7:]
+            last_lap_times = temp_driver.get(drivers[k])
+            last_lap_times[l] =  final_temp
+            temp_driver[drivers[k]] = last_lap_times
 
-print(final_data["Mexico GP"])
+        temp_data = final_data.get(i)
+        temp_driver.update(temp_data)
+        final_data[i] = temp_driver
+
+        k += 1
+
+print(final_data)
+
+lec_difference = []
+sai_difference = []
+
+def Compare_Times(data):
+
+    for i in selected_races:
+
+
+        pass
+
+
+Compare_Times(final_data)
